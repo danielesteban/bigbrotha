@@ -4,13 +4,15 @@
 
 > big brotha is watching
 
+[![screenshot](src/screenshot.jpg)](https://bigbrotha.gatunes.com/)
+
 ## Dev environment
 
 [![dependencies Status](https://david-dm.org/danielesteban/bigbrotha/status.svg)](https://david-dm.org/danielesteban/bigbrotha)
 [![devDependencies Status](https://david-dm.org/danielesteban/bigbrotha/dev-status.svg)](https://david-dm.org/danielesteban/bigbrotha?type=dev)
 
- * [Node.js](https://nodejs.org/en/download/) >= 10.15
- * [Yarn](https://yarnpkg.com/en/docs/install) >= 1.15
+ * [Node.js](https://nodejs.org/en/download/) >= 10.16
+ * [Yarn](https://yarnpkg.com/en/docs/install) >= 1.16
 
 ```bash
 git clone https://github.com/danielesteban/bigbrotha.git

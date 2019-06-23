@@ -123,7 +123,7 @@ module.exports = {
         include: srcPath,
       },
       {
-        test: /\.(weights|png|ogg)$/,
+        test: /\.(jpg|ogg|weights)$/,
         loader: 'file-loader',
         options: {
           name: `assets/${(mode === 'production' ? '[hash]' : '[name]')}.[ext]`,
@@ -186,6 +186,8 @@ module.exports = {
       ),
       domain,
       minify: { collapseWhitespace: true },
+      creator: '@DaniGatunes',
+      description: 'big brotha is watching',
       template: path.join(srcPath, 'index.ejs'),
       title,
     }),
