@@ -42,7 +42,7 @@ class Level1 extends Scene {
             y === 0
             || (
               (
-                x === 7 || x === 8
+                x >= 7 && x <= 8
               )
               && (
                 (
