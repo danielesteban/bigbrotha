@@ -16,11 +16,6 @@ body {
   overflow: hidden;
 }
 
-#mount {
-  width: 100vw;
-  height: 100vh;
-}
-
 canvas {
   vertical-align: middle;
 }
@@ -46,4 +41,44 @@ canvas {
 #crosshair > span:nth-child(2) {
   width: 2px;
   height: 8px;
+}
+
+#github {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+#github .octo-arm {
+  transform-origin: 130px 106px;
+}
+
+#github:hover .octo-arm {
+  animation: octocat-wave 560ms ease-in-out;
+}
+
+#mount {
+  width: 100vw;
+  height: 100vh;
+}
+
+@keyframes octocat-wave {
+  0% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(-25deg);
+  }
+  40% {
+    transform: rotate(10deg);
+  }
+  60% {
+    transform: rotate(-25deg);
+  }
+  80% {
+    transform: rotate(10deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
 }
