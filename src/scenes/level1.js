@@ -21,11 +21,13 @@ class Level1 extends Scene {
     const { engine } = args;
 
     engine.setAmbientSounds([DarkAmbient]);
-    engine.setBackgroundColor(0x111122);
+    engine.setBackgroundColor(0x101020);
 
     engine.camera.fov = 75;
     engine.camera.updateProjectionMatrix();
-    engine.camera.lookAt(0, 1.8, -1);
+    engine.camera.lookAt(0, 1.8275, -1);
+    engine.camera.room.position.set(0, 0.5, -1);
+    // engine.camera.debug.active = true;
 
     // Spawn some huge walls
     const walls = new Walls();
@@ -35,9 +37,22 @@ class Level1 extends Scene {
     {
       const size = 16;
       const platform = new Voxels({
-        generator: ({ y }) => {
+        generator: ({ x, y, z }) => {
           if (
             y === 0
+            || (
+              (
+                x === 7 || x === 8
+              )
+              && (
+                (
+                  y < 3 && z >= 6 && z <= 7
+                )
+                || (
+                  y < 2 && z >= 8 && z <= 9
+                )
+              )
+            )
           ) {
             const light = (1 - Math.random() * 0.6) * 0x1A;
             return (
@@ -52,18 +67,38 @@ class Level1 extends Scene {
         size,
         texture: this.voxelsTexture,
       });
+      platform.scale.set(1, 0.5, 1);
       platform.position.set(size * -0.5, -1, size * -0.5);
       this.add(platform);
       this.intersects.push(platform);
 
-      const ground = new Floor({
-        width: size,
-        height: size,
+      [
+        {
+          position: [0, -0.5, 0],
+          width: size,
+          height: size,
+        },
+        {
+          position: [0, 0, 1],
+          width: 2,
+          height: 2,
+        },
+        {
+          position: [0, 0.5, -1],
+          width: 2,
+          height: 2,
+        },
+      ].forEach(({ position, width, height }) => {
+        const floor = new Floor({
+          width,
+          height,
+        });
+        floor.position.set(...position);
+        floor.material.visible = false;
+        floor.position.y += 0.001;
+        this.add(floor);
+        this.intersects.push(floor);
       });
-      ground.material.visible = false;
-      ground.position.y += 0.001;
-      this.add(ground);
-      this.intersects.push(ground);
     }
 
     // Spawn a sign
@@ -167,6 +202,8 @@ class Level1 extends Scene {
               sx, sy, sw, sh,
               x, y, w, h
             );
+            display.context.fillStyle = 'rgba(16, 16, 32, 0.5)';
+            display.context.fillRect(0, 0, display.renderer.width, display.renderer.height);
             display.texture.needsUpdate = true;
           }
           this.timeout = setTimeout(detectFace);
