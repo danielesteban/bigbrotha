@@ -4,6 +4,7 @@ import {
   fetchNetWeights,
   TinyFaceDetectorOptions,
 } from 'face-api.js';
+import { Object3D } from 'three';
 import {
   Scene,
   Floor,
@@ -24,7 +25,7 @@ class Level1 extends Scene {
 
     engine.camera.fov = 75;
     engine.camera.updateProjectionMatrix();
-    engine.camera.lookAt(0, 2, -1);
+    engine.camera.lookAt(0, 1.8, -1);
 
     // Spawn some huge walls
     const walls = new Walls();
@@ -103,8 +104,10 @@ class Level1 extends Scene {
 
     // Spawn a bunch of screens
     const displays = [];
-    for (let y = 0; y < 8; y += 1) {
-      for (let x = 0; x < 8; x += 1) {
+    for (let y = 0; y < 6; y += 1) {
+      const distance = 7 + y * 0.5;
+      for (let x = 0; x < 10; x += 1) {
+        const pivot = new Object3D();
         const display = new UI({
           width: 1,
           height: 1,
@@ -112,13 +115,23 @@ class Level1 extends Scene {
             background: '#330000',
           },
         });
-        display.position.set(x - 3.5, y + 1, -5);
+        const s = 0.8 + Math.random() * 0.15;
+        display.scale.set(s, s, s);
         displays.push(display);
         const stepY = Math.random() + 0.5;
         display.onBeforeRender = ({ animation: { time } }) => {
           display.rotation.y = Math.sin(time * stepY) * 0.25;
         };
-        this.add(display);
+        pivot.add(display);
+        const yaw = Math.PI + ((x - 4.5) / 11) * Math.PI * 0.5;
+        const pitch = ((y + 1.5) / 7) * Math.PI * 0.25;
+        pivot.position.set(
+          distance * Math.sin(yaw) * Math.cos(pitch),
+          distance * Math.sin(pitch),
+          distance * Math.cos(yaw) * Math.cos(pitch)
+        );
+        pivot.lookAt(0, 3, 0);
+        this.add(pivot);
       }
     }
     displays.sort(() => Math.random() - 0.5);
