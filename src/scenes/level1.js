@@ -21,7 +21,7 @@ class Level1 extends Scene {
     const { engine } = args;
 
     engine.setAmbientSounds([DarkAmbient]);
-    engine.setBackgroundColor(0x330000);
+    engine.setBackgroundColor(0x111122);
 
     engine.camera.fov = 75;
     engine.camera.updateProjectionMatrix();
@@ -39,12 +39,12 @@ class Level1 extends Scene {
           if (
             y === 0
           ) {
-            const light = (1 - Math.random() * 0.6) * 0x33;
+            const light = (1 - Math.random() * 0.6) * 0x1A;
             return (
               (0x03 << 24)
-              | (light << 16)
-              | (Math.floor(light * 0.25) << 8)
-              | Math.floor(light * 0.25)
+              | (Math.floor(light * 0.5) << 16)
+              | (Math.floor(light * 0.5) << 8)
+              | light
             );
           }
           return 0x00;
@@ -111,9 +111,6 @@ class Level1 extends Scene {
         const display = new UI({
           width: 1,
           height: 1,
-          styles: {
-            background: '#330000',
-          },
         });
         const s = 0.8 + Math.random() * 0.15;
         display.scale.set(s, s, s);
