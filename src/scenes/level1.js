@@ -12,8 +12,8 @@ import {
   UI,
 } from 'vrengine';
 import { Sign, Walls } from '@/meshes';
-import TinyFaceDetectorModel from '@/weights/tiny_face_detector_model.weights';
 import DarkAmbient from '@/sounds/dark.ogg';
+import TinyFaceDetectorModel from '@/weights/tiny_face_detector_model.weights';
 
 class Level1 extends Scene {
   constructor(args) {
@@ -144,6 +144,12 @@ class Level1 extends Scene {
       for (let x = 0; x < 10; x += 1) {
         const pivot = new Object3D();
         const display = new UI({
+          labels: [{
+            x: 128,
+            y: 128,
+            color: 'rgba(255, 255, 255, 0.25)',
+            text: 'NO SIGNAL',
+          }],
           width: 1,
           height: 1,
         });
