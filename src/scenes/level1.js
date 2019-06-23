@@ -156,9 +156,12 @@ class Level1 extends Scene {
         const s = 0.8 + Math.random() * 0.15;
         display.scale.set(s, s, s);
         displays.push(display);
+        const stepX = Math.random() + 0.5;
         const stepY = Math.random() + 0.5;
+        display.rotation.order = 'YXZ';
         display.onBeforeRender = ({ animation: { time } }) => {
-          display.rotation.y = Math.sin(time * stepY) * 0.25;
+          display.rotation.x = Math.sin(time * stepX) * 0.2;
+          display.rotation.y = Math.sin(time * stepY) * 0.2;
         };
         pivot.add(display);
         const yaw = Math.PI + ((x - 4.5) / 11) * Math.PI * 0.5;
