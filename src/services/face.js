@@ -4,7 +4,7 @@ import {
   fetchNetWeights,
   TinyFaceDetectorOptions,
 } from 'face-api.js';
-import TinyFaceDetectorModel from '@/weights/tiny_face_detector_model.weights';
+import TinyFaceDetectorModel from './face_detector_model.weights';
 
 class Face {
   constructor() {
