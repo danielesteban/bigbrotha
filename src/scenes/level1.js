@@ -1,9 +1,3 @@
-import {
-  detectSingleFace,
-  nets,
-  fetchNetWeights,
-  TinyFaceDetectorOptions,
-} from 'face-api.js';
 import { Object3D } from 'three';
 import {
   Scene,
@@ -12,8 +6,8 @@ import {
   UI,
 } from 'vrengine';
 import { Sign, Walls } from '@/meshes';
+import Face from '@/services/face';
 import DarkAmbient from '@/sounds/dark.ogg';
-import TinyFaceDetectorModel from '@/weights/tiny_face_detector_model.weights';
 
 class Level1 extends Scene {
   constructor(args) {
@@ -71,7 +65,6 @@ class Level1 extends Scene {
       platform.position.set(size * -0.5, -1, size * -0.5);
       this.add(platform);
       this.intersects.push(platform);
-
       [
         {
           position: [0, -0.5, 0],
@@ -138,7 +131,7 @@ class Level1 extends Scene {
     this.intersects.push(...sign.intersects);
 
     // Spawn a bunch of screens
-    const displays = [];
+    this.displays = [];
     for (let y = 0; y < 6; y += 1) {
       const distance = 7 + y * 0.5;
       for (let x = 0; x < 10; x += 1) {
@@ -155,7 +148,7 @@ class Level1 extends Scene {
         });
         const s = 0.8 + Math.random() * 0.15;
         display.scale.set(s, s, s);
-        displays.push(display);
+        this.displays.push(display);
         const stepX = Math.random() + 0.5;
         const stepY = Math.random() + 0.5;
         display.rotation.order = 'YXZ';
@@ -175,72 +168,41 @@ class Level1 extends Scene {
         this.add(pivot);
       }
     }
-    displays.sort(() => Math.random() - 0.5);
 
-    let displayIndex = 0;
-    const video = document.createElement('video');
-    const options = new TinyFaceDetectorOptions();
-    const detectFace = () => {
-      detectSingleFace(video, options)
-        .then((result) => {
-          if (result) {
-            const { box } = result;
-            const display = displays[displayIndex];
-            displayIndex += 1;
-            if (displayIndex >= displays.length) {
-              displays.sort(() => Math.random() - 0.5);
-              displayIndex = 0;
-            }
-            const sx = Math.max(box.x - box.width * 0.25, 0);
-            const sy = Math.max(box.y - box.height * 0.25, 0);
-            const sw = Math.min(box.width * 1.5, video.videoHeight - sx);
-            const sh = Math.min(box.height * 1.5, video.videoHeight - sy);
-            let x = 0;
-            let y = 0;
-            let w = display.renderer.width;
-            let h = display.renderer.height;
-            if (sw < sh) {
-              h = sh * w / sw;
-              y = display.renderer.height * 0.5 - h * 0.5;
-            } else {
-              w = sw * h / sh;
-              x = display.renderer.width * 0.5 - w * 0.5;
-            }
-            display.context.drawImage(
-              video,
-              sx, sy, sw, sh,
-              x, y, w, h
-            );
-            display.context.fillStyle = 'rgba(16, 16, 32, 0.5)';
-            display.context.fillRect(0, 0, display.renderer.width, display.renderer.height);
-            display.texture.needsUpdate = true;
-          }
-          this.timeout = setTimeout(detectFace);
-        });
-    };
-    video.onloadedmetadata = detectFace;
+    this.displayIndex = 0;
+    this.displays.sort(() => Math.random() - 0.5);
+    this.renderFace = this.renderFace.bind(this);
+    this.renderFace();
+  }
 
-    fetchNetWeights(TinyFaceDetectorModel)
-      .then((model) => {
-        nets.tinyFaceDetector.load(model).then(() => {
-          navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-            .then((stream) => {
-              video.srcObject = stream;
-              video.play();
-              this.stream = stream;
-            });
-        });
+  renderFace() {
+    const {
+      displays,
+      displayIndex,
+    } = this;
+    if (!Face.isReady) {
+      this.renderFaceTimeout = setTimeout(this.renderFace);
+      return;
+    }
+    const display = displays[displayIndex];
+    this.displayIndex += 1;
+    if (this.displayIndex >= displays.length) {
+      this.displayIndex = 0;
+      displays.sort(() => Math.random() - 0.5);
+    }
+    Face
+      .render({
+        display,
+        tint: 'rgba(16, 16, 32, 0.5)',
+      })
+      .then(() => {
+        this.renderFaceTimeout = setTimeout(this.renderFace);
       });
   }
 
   dispose() {
     super.dispose();
-    if (this.stream) {
-      this.stream.getTracks().forEach(track => (
-        track.stop()
-      ));
-    }
-    clearTimeout(this.timeout);
+    clearTimeout(this.renderFaceTimeout);
   }
 }
 
